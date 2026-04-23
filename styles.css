@@ -323,6 +323,106 @@ pre {
   padding: 1rem;
 }
 
+.demo-workbench {
+  display: grid;
+  grid-template-columns: 22rem minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.demo-controls,
+.demo-stage,
+.result-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.demo-controls {
+  display: grid;
+  gap: 0.9rem;
+  align-self: start;
+  padding: 1rem;
+}
+
+.demo-controls label {
+  display: grid;
+  gap: 0.4rem;
+  color: var(--muted);
+}
+
+.demo-controls input[type="file"],
+.demo-controls input[type="text"],
+.demo-controls input[type="range"] {
+  width: 100%;
+}
+
+.demo-controls input[type="text"] {
+  min-height: 2.35rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(244, 240, 223, 0.06);
+  color: var(--text);
+}
+
+.small-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.demo-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20rem;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.canvas-wrap {
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0a0c0b;
+}
+
+#canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.result-panel {
+  padding: 1rem;
+}
+
+.result-panel h2 {
+  margin: 0 0 0.8rem;
+  font-size: 1.35rem;
+}
+
+#countList {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.count-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(244, 240, 223, 0.05);
+}
+
+.count-pill strong {
+  color: var(--green);
+  font-size: 1.25rem;
+}
+
 .business {
   display: grid;
   gap: 1rem;
@@ -428,6 +528,11 @@ pre {
   }
 
   .business-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-workbench,
+  .demo-stage {
     grid-template-columns: 1fr;
   }
 }

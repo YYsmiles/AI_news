@@ -6,6 +6,8 @@ AI Domain Model Atlas is a small web atlas for browsing AI models by domain, cap
 
 - `index.html` - main page.
 - `counting.html` - counting model landing page.
+- `counting-demo.html` - browser-side upload-and-count demo.
+- `counting-demo.js` - Transformers.js zero-shot object detection demo.
 - `segmentation.html` - segmentation model landing page.
 - `ocr.html` - OCR and document parsing landing page.
 - `styles.css` - page styling.
@@ -129,6 +131,7 @@ MISTRAL_API_KEY
 The site includes three SEO landing pages that can become paid-template funnels:
 
 - `counting.html` - counting models and a paid counting-template CTA.
+- `counting-demo.html` - free browser counting demo for lead capture and product validation.
 - `segmentation.html` - SAM/GroundingDINO segmentation route and a paid segmentation-template CTA.
 - `ocr.html` - OCR/document parsing route and a paid OCR-template CTA.
 

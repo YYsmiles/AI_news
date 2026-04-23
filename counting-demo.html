@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>在线 AI 计数 Demo | 上传图片检测并计数</title>
+    <meta name="description" content="上传图片，在浏览器中使用零样本目标检测模型识别并计数物体，适合快速测试通用物体计数。" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="kicker">Browser Counting Demo</p>
+        <h1>上传图片计数</h1>
+        <p class="subtitle">输入目标名称，浏览器会检测图片里的目标、画框并统计数量。首次运行会下载模型，可能需要几十秒。</p>
+      </div>
+      <nav>
+        <a href="index.html">首页</a>
+        <a href="counting.html">计数专题</a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <section class="demo-workbench">
+        <div class="demo-controls">
+          <label>
+            <span>上传图片</span>
+            <input id="imageInput" type="file" accept="image/*" />
+          </label>
+          <label>
+            <span>要计数的目标</span>
+            <input id="labelInput" type="text" value="flower, fruit, person, car" />
+          </label>
+          <label>
+            <span>置信度阈值：<strong id="thresholdValue">0.25</strong></span>
+            <input id="thresholdInput" type="range" min="0.05" max="0.8" step="0.05" value="0.25" />
+          </label>
+          <button class="primary" id="runButton" type="button">开始计数</button>
+          <p class="small-note">说明：这是前端零样本检测 Demo，适合通用目标。密集小目标、遮挡严重、农业花朵计数需要 CountGD/P2PNet 等后端模型。</p>
+        </div>
+
+        <div class="demo-stage">
+          <div class="canvas-wrap">
+            <canvas id="canvas" width="960" height="640"></canvas>
+          </div>
+          <div class="result-panel">
+            <p class="kicker">Result</p>
+            <h2 id="resultTitle">等待上传图片</h2>
+            <div id="countList"></div>
+            <pre id="rawOutput">结果会显示在这里。</pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="counting-demo.js"></script>
+  </body>
+</html>
