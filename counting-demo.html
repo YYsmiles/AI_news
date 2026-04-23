@@ -42,12 +42,16 @@
             <span>置信度 / 敏感度：<strong id="thresholdValue">0.25</strong></span>
             <input id="thresholdInput" type="range" min="0.05" max="0.8" step="0.05" value="0.25" />
           </label>
+          <label id="spacingField">
+            <span>最小花距：<strong id="spacingValue">9</strong> px</span>
+            <input id="spacingInput" type="range" min="4" max="28" step="1" value="9" />
+          </label>
           <button class="primary" id="runButton" type="button">开始计数</button>
           <div class="button-row">
             <button class="secondary" id="downloadCsv" type="button" disabled>导出 CSV</button>
             <button class="secondary" id="downloadImage" type="button" disabled>下载标注图</button>
           </div>
-          <p class="small-note">说明：颜色计数是近似算法，适合先快速估算。论文级农业计数仍需要 CountGD/P2PNet 等后端模型。</p>
+          <p class="small-note">说明：花朵模式使用局部峰值检测，适合密集红/粉/黄花的快速估算。花距越小，数量越多；花距越大，数量越少。</p>
         </div>
 
         <div class="demo-stage">

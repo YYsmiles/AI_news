@@ -8,6 +8,9 @@ const labelInput = document.querySelector("#labelInput");
 const labelField = document.querySelector("#labelField");
 const thresholdInput = document.querySelector("#thresholdInput");
 const thresholdValue = document.querySelector("#thresholdValue");
+const spacingInput = document.querySelector("#spacingInput");
+const spacingValue = document.querySelector("#spacingValue");
+const spacingField = document.querySelector("#spacingField");
 const runButton = document.querySelector("#runButton");
 const downloadCsv = document.querySelector("#downloadCsv");
 const downloadImage = document.querySelector("#downloadImage");
@@ -27,8 +30,14 @@ thresholdInput.addEventListener("input", () => {
   thresholdValue.textContent = thresholdInput.value;
 });
 
+spacingInput.addEventListener("input", () => {
+  spacingValue.textContent = spacingInput.value;
+});
+
 modeInput.addEventListener("change", () => {
-  labelField.style.display = modeInput.value === "detector" ? "grid" : "none";
+  const detectorMode = modeInput.value === "detector";
+  labelField.style.display = detectorMode ? "grid" : "none";
+  spacingField.style.display = detectorMode ? "none" : "grid";
 });
 
 imageInput.addEventListener("change", () => {
@@ -137,39 +146,34 @@ async function runDetector() {
 function runFlowerCounter() {
   drawImage();
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const mask = buildFlowerMask(imageData, Number(thresholdInput.value));
-  const components = connectedComponents(mask, canvas.width, canvas.height);
-  const filtered = components.filter((item) => item.area >= 10);
-  const smallAreas = filtered
-    .map((item) => item.area)
-    .filter((area) => area >= 12 && area <= 650)
-    .sort((a, b) => a - b);
-  const unitArea = median(smallAreas) || 90;
+  const score = buildFlowerScore(imageData);
+  const blurred = boxBlur(score, canvas.width, canvas.height, 2);
+  const threshold = flowerThreshold(blurred, Number(thresholdInput.value));
+  const spacing = Number(spacingInput.value);
+  const peaks = findPeaks(blurred, canvas.width, canvas.height, threshold, spacing);
 
-  const expanded = [];
-  filtered.forEach((item) => {
-    const estimated = Math.max(1, Math.round(item.area / unitArea));
-    expanded.push({
-      label: "flower",
-      score: 1,
-      area: item.area,
-      estimated,
-      box: { xmin: item.xmin, ymin: item.ymin, xmax: item.xmax, ymax: item.ymax }
-    });
-  });
+  lastResults = peaks.map((peak) => ({
+    label: "flower",
+    score: peak.score,
+    area: 0,
+    box: {
+      xmin: Math.max(0, peak.x - spacing),
+      ymin: Math.max(0, peak.y - spacing),
+      xmax: Math.min(canvas.width, peak.x + spacing),
+      ymax: Math.min(canvas.height, peak.y + spacing)
+    },
+    center: { x: peak.x, y: peak.y }
+  }));
 
-  const total = expanded.reduce((sum, item) => sum + item.estimated, 0);
-  lastResults = expanded;
-  drawFlowerComponents(expanded);
-  renderFlowerCount(total, expanded, unitArea);
-  rawOutput.textContent = JSON.stringify({ total, unitArea, components: expanded }, null, 2);
-  resultTitle.textContent = `估算 ${total} 朵花`;
+  drawFlowerPeaks(lastResults, spacing);
+  renderFlowerCount(lastResults.length, threshold, spacing);
+  rawOutput.textContent = JSON.stringify({ total: lastResults.length, threshold, spacing, peaks: lastResults }, null, 2);
+  resultTitle.textContent = `估算 ${lastResults.length} 朵花`;
 }
 
-function buildFlowerMask(imageData, threshold) {
+function buildFlowerScore(imageData) {
   const data = imageData.data;
-  const mask = new Uint8Array(imageData.width * imageData.height);
-  const sensitivity = 1 - threshold;
+  const score = new Float32Array(imageData.width * imageData.height);
 
   for (let i = 0, p = 0; i < data.length; i += 4, p += 1) {
     const r = data[i];
@@ -177,83 +181,110 @@ function buildFlowerMask(imageData, threshold) {
     const b = data[i + 2];
     const { h, s, v } = rgbToHsv(r, g, b);
 
-    const red = h <= 25 || h >= 335;
-    const pink = h >= 285 && h <= 334;
-    const yellow = h >= 28 && h <= 70 && r > g * 0.85;
-    const brightEnough = v > 0.12 + threshold * 0.12;
-    const saturated = s > 0.22 + threshold * 0.2;
-    const strongerThanGreen = r > g * (0.82 - sensitivity * 0.18) || b > g * 0.95;
-
-    if ((red || pink || yellow) && brightEnough && saturated && strongerThanGreen) {
-      mask[p] = 1;
-    }
+    const redDistance = Math.min(Math.abs(h), Math.abs(360 - h));
+    const pinkDistance = Math.abs(h - 315);
+    const yellowDistance = Math.abs(h - 48);
+    const redWeight = Math.max(0, 1 - redDistance / 34);
+    const pinkWeight = Math.max(0, 1 - pinkDistance / 46);
+    const yellowWeight = Math.max(0, 1 - yellowDistance / 35);
+    const colorWeight = Math.max(redWeight, pinkWeight, yellowWeight);
+    const greenPenalty = g > r * 1.12 && g > b * 1.12 ? 0.25 : 1;
+    score[p] = colorWeight * Math.pow(s, 0.85) * Math.pow(v, 0.75) * greenPenalty;
   }
 
-  return mask;
+  return score;
 }
 
-function connectedComponents(mask, width, height) {
-  const visited = new Uint8Array(mask.length);
-  const components = [];
-  const queue = [];
-  const neighbors = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+function boxBlur(values, width, height, radius) {
+  const output = new Float32Array(values.length);
+  const area = (radius * 2 + 1) ** 2;
 
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
-      const start = y * width + x;
-      if (!mask[start] || visited[start]) continue;
-
-      let area = 0;
-      let xmin = x;
-      let ymin = y;
-      let xmax = x;
-      let ymax = y;
-      visited[start] = 1;
-      queue.length = 0;
-      queue.push([x, y]);
-
-      for (let head = 0; head < queue.length; head += 1) {
-        const [cx, cy] = queue[head];
-        area += 1;
-        if (cx < xmin) xmin = cx;
-        if (cy < ymin) ymin = cy;
-        if (cx > xmax) xmax = cx;
-        if (cy > ymax) ymax = cy;
-
-        neighbors.forEach(([dx, dy]) => {
-          const nx = cx + dx;
-          const ny = cy + dy;
-          if (nx < 0 || ny < 0 || nx >= width || ny >= height) return;
-          const next = ny * width + nx;
-          if (!mask[next] || visited[next]) return;
-          visited[next] = 1;
-          queue.push([nx, ny]);
-        });
+      let sum = 0;
+      for (let dy = -radius; dy <= radius; dy += 1) {
+        const ny = Math.min(height - 1, Math.max(0, y + dy));
+        for (let dx = -radius; dx <= radius; dx += 1) {
+          const nx = Math.min(width - 1, Math.max(0, x + dx));
+          sum += values[ny * width + nx];
+        }
       }
-
-      components.push({ area, xmin, ymin, xmax, ymax });
+      output[y * width + x] = sum / area;
     }
   }
 
-  return components;
+  return output;
 }
 
-function drawFlowerComponents(results) {
+function flowerThreshold(values, sensitivity) {
+  let max = 0;
+  let sum = 0;
+  for (const value of values) {
+    if (value > max) max = value;
+    sum += value;
+  }
+  const mean = sum / values.length;
+  return Math.max(mean * (1.8 + sensitivity), max * (0.16 + sensitivity * 0.34));
+}
+
+function findPeaks(values, width, height, threshold, spacing) {
+  const candidates = [];
+  const localRadius = Math.max(2, Math.floor(spacing / 3));
+  const maxCandidates = 12000;
+
+  for (let y = spacing; y < height - spacing; y += 1) {
+    for (let x = spacing; x < width - spacing; x += 1) {
+      const value = values[y * width + x];
+      if (value < threshold) continue;
+      let isPeak = true;
+      for (let dy = -localRadius; dy <= localRadius && isPeak; dy += 1) {
+        for (let dx = -localRadius; dx <= localRadius; dx += 1) {
+          if (dx === 0 && dy === 0) continue;
+          if (values[(y + dy) * width + x + dx] > value) {
+            isPeak = false;
+            break;
+          }
+        }
+      }
+      if (isPeak) candidates.push({ x, y, score: value });
+    }
+  }
+
+  candidates.sort((a, b) => b.score - a.score);
+  const selected = [];
+  const minDistanceSq = spacing * spacing;
+
+  for (const candidate of candidates.slice(0, maxCandidates)) {
+    const tooClose = selected.some((peak) => {
+      const dx = peak.x - candidate.x;
+      const dy = peak.y - candidate.y;
+      return dx * dx + dy * dy < minDistanceSq;
+    });
+    if (!tooClose) selected.push(candidate);
+  }
+
+  return selected;
+}
+
+function drawFlowerPeaks(results, spacing) {
   ctx.strokeStyle = "#b9ff4a";
+  ctx.fillStyle = "#b9ff4a";
   ctx.lineWidth = 2;
   results.forEach((item) => {
-    const box = normalizeBox(item.box);
-    if (item.area < 10) return;
-    ctx.strokeRect(box.xmin, box.ymin, box.xmax - box.xmin, box.ymax - box.ymin);
+    const { x, y } = item.center;
+    ctx.beginPath();
+    ctx.arc(x, y, Math.max(3, spacing * 0.45), 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillRect(x - 1, y - 1, 3, 3);
   });
 }
 
-function renderFlowerCount(total, components, unitArea) {
+function renderFlowerCount(total, threshold, spacing) {
   countList.innerHTML = `
     <div class="count-pill"><span>flower estimate</span><strong>${total}</strong></div>
-    <div class="count-pill"><span>color blobs</span><strong>${components.length}</strong></div>
+    <div class="count-pill"><span>peak spacing</span><strong>${spacing}px</strong></div>
   `;
-  rawOutput.textContent = `Estimated flowers: ${total}\nColor blobs: ${components.length}\nEstimated unit area: ${unitArea.toFixed(1)} px`;
+  rawOutput.textContent = `Estimated flowers: ${total}\nScore threshold: ${threshold.toFixed(4)}\nPeak spacing: ${spacing}px`;
 }
 
 function getDetector() {
@@ -345,12 +376,6 @@ function rgbToHsv(r, g, b) {
   if (h < 0) h += 360;
   const s = max === 0 ? 0 : delta / max;
   return { h, s, v: max };
-}
-
-function median(values) {
-  if (!values.length) return 0;
-  const middle = Math.floor(values.length / 2);
-  return values.length % 2 ? values[middle] : (values[middle - 1] + values[middle]) / 2;
 }
 
 function downloadText(filename, text, type) {
