@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>在线 AI 计数 Demo | 上传图片检测并计数</title>
-    <meta name="description" content="上传图片，在浏览器中使用零样本目标检测模型识别并计数物体，适合快速测试通用物体计数。" />
+    <title>AI 计数 Demo | 上传图片计数</title>
+    <meta name="description" content="上传图片后进行浏览器端计数。支持红/粉/黄花朵颜色计数和通用零样本目标检测计数。" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -12,7 +12,7 @@
       <div>
         <p class="kicker">Browser Counting Demo</p>
         <h1>上传图片计数</h1>
-        <p class="subtitle">输入目标名称，浏览器会检测图片里的目标、画框并统计数量。首次运行会下载模型，可能需要几十秒。</p>
+        <p class="subtitle">默认使用离线颜色计数，不需要下载模型。通用目标可切换到零样本检测模式。</p>
       </div>
       <nav>
         <a href="index.html">首页</a>
@@ -28,15 +28,26 @@
             <input id="imageInput" type="file" accept="image/*" />
           </label>
           <label>
-            <span>要计数的目标</span>
-            <input id="labelInput" type="text" value="flower, fruit, person, car" />
+            <span>计数模式</span>
+            <select id="modeInput">
+              <option value="flower">花朵颜色计数（离线，适合红/粉/黄花）</option>
+              <option value="detector">通用目标检测（需下载模型）</option>
+            </select>
+          </label>
+          <label id="labelField">
+            <span>目标标签（检测模式）</span>
+            <input id="labelInput" type="text" value="person, car, dog, flower" />
           </label>
           <label>
-            <span>置信度阈值：<strong id="thresholdValue">0.25</strong></span>
+            <span>置信度 / 敏感度：<strong id="thresholdValue">0.25</strong></span>
             <input id="thresholdInput" type="range" min="0.05" max="0.8" step="0.05" value="0.25" />
           </label>
           <button class="primary" id="runButton" type="button">开始计数</button>
-          <p class="small-note">说明：这是前端零样本检测 Demo，适合通用目标。密集小目标、遮挡严重、农业花朵计数需要 CountGD/P2PNet 等后端模型。</p>
+          <div class="button-row">
+            <button class="secondary" id="downloadCsv" type="button" disabled>导出 CSV</button>
+            <button class="secondary" id="downloadImage" type="button" disabled>下载标注图</button>
+          </div>
+          <p class="small-note">说明：颜色计数是近似算法，适合先快速估算。论文级农业计数仍需要 CountGD/P2PNet 等后端模型。</p>
         </div>
 
         <div class="demo-stage">
@@ -47,6 +58,9 @@
             <p class="kicker">Result</p>
             <h2 id="resultTitle">等待上传图片</h2>
             <div id="countList"></div>
+            <div class="result-actions">
+              <button class="secondary" id="copyJson" type="button" disabled>复制 JSON</button>
+            </div>
             <pre id="rawOutput">结果会显示在这里。</pre>
           </div>
         </div>
