@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI OCR 与文档解析 | PaddleOCR-VL 接入路线</title>
+    <meta name="description" content="整理 PaddleOCR-VL、PaddleOCR、Florence-2 的 OCR 和文档解析路线，适合 PDF、表格、公式、票据和 RAG 前处理。" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="kicker">OCR Models</p>
+        <h1>AI OCR / 文档解析</h1>
+        <p class="subtitle">文档不是只识别文字。表格、公式、版面、图表和阅读顺序决定后续 RAG 质量。</p>
+      </div>
+      <nav>
+        <a href="index.html">首页</a>
+        <a href="#route">路线</a>
+        <a href="#template">模板</a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <section class="business">
+        <div>
+          <p class="kicker">Quick choice</p>
+          <h2>怎么选</h2>
+        </div>
+        <div class="business-grid">
+          <article>
+            <h3>复杂 PDF</h3>
+            <p>优先 PaddleOCR-VL，关注表格、公式、图表和 Markdown 输出。</p>
+          </article>
+          <article>
+            <h3>简单拍照文字</h3>
+            <p>普通 OCR 足够，重点处理倾斜、模糊、反光和多语言。</p>
+          </article>
+          <article>
+            <h3>RAG 前处理</h3>
+            <p>输出应同时保留 Markdown、layout JSON、页码和坐标。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="table-card" id="route">
+        <table>
+          <thead>
+            <tr>
+              <th>任务</th>
+              <th>模型</th>
+              <th>输出</th>
+              <th>适合</th>
+              <th>入口</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>文档解析</td>
+              <td><span class="model">PaddleOCR-VL</span><span class="provider">PaddlePaddle</span></td>
+              <td>Markdown、JSON、layout elements。</td>
+              <td>论文、合同、财报、扫描 PDF。</td>
+              <td><a class="demo" href="https://www.paddleocr.ai/main/en/index.html" target="_blank" rel="noreferrer">Docs</a></td>
+            </tr>
+            <tr>
+              <td>多任务视觉 OCR</td>
+              <td><span class="model">Florence-2</span><span class="provider">Microsoft</span></td>
+              <td>OCR、caption、region、detection。</td>
+              <td>视觉原型和多任务轻量 demo。</td>
+              <td><a class="demo" href="https://huggingface.co/microsoft/Florence-2-large" target="_blank" rel="noreferrer">HF</a></td>
+            </tr>
+            <tr>
+              <td>票据 / 表单</td>
+              <td><span class="model">OCR + 结构化抽取</span><span class="provider">Pipeline</span></td>
+              <td>字段 JSON、置信度、原文坐标。</td>
+              <td>报销、发票、病历、表单录入。</td>
+              <td><a class="demo" href="index.html">模型表</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="business" id="template">
+        <div>
+          <p class="kicker">Paid template</p>
+          <h2>可销售模板</h2>
+        </div>
+        <pre>OCR 模板应包含：
+1. 上传 PDF / 图片
+2. OCR + layout parsing
+3. 输出 Markdown
+4. 输出结构化 JSON
+5. 表格导出 CSV
+6. RAG chunk 生成</pre>
+        <div class="cta">
+          <a class="primary" href="mailto:hello@example.com?subject=购买 OCR 文档解析模板">购买 OCR 模板</a>
+          <a class="secondary" href="index.html">返回模型表</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

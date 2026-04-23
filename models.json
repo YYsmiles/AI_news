@@ -1,0 +1,178 @@
+{
+  "models": [
+    {
+      "task": "画图 / 图片生成",
+      "name": "FLUX、Stable Diffusion 3.5",
+      "provider": "BFL / Stability AI",
+      "category": "generate",
+      "use": "海报、概念图、电商图、风格图。",
+      "demo": "Playground / API",
+      "url": "https://docs.bfl.ai/",
+      "command": "# FLUX: 查看 BFL API 文档\n# SD 3.5:\npip install diffusers transformers accelerate safetensors"
+    },
+    {
+      "task": "图片编辑",
+      "name": "FLUX Kontext",
+      "provider": "Black Forest Labs",
+      "category": "generate",
+      "use": "局部修改、换背景、保留人物或产品一致性。",
+      "demo": "API / Playground",
+      "url": "https://docs.bfl.ai/kontext/kontext_image_editing",
+      "command": "POST /v1/flux-kontext\nimage=product.jpg\nprompt=\"change background, keep label unchanged\""
+    },
+    {
+      "task": "视频生成",
+      "name": "Sora、Grok Imagine、Veo",
+      "provider": "OpenAI / xAI / Google",
+      "category": "generate",
+      "use": "短视频、广告镜头、动态分镜。",
+      "demo": "产品 / API",
+      "url": "https://openai.com/sora/",
+      "command": "记录：prompt / input image / output video / cost / failure notes"
+    },
+    {
+      "task": "检测 / 跟踪",
+      "name": "YOLO11 / YOLO26",
+      "provider": "Ultralytics",
+      "category": "vision",
+      "use": "目标检测、姿态、跟踪、工业质检。",
+      "demo": "Python / CLI",
+      "url": "https://docs.ultralytics.com/",
+      "command": "pip install ultralytics\nyolo predict model=yolo11n.pt source=image.jpg\nyolo track model=yolo11n.pt source=video.mp4"
+    },
+    {
+      "task": "开放词汇检测",
+      "name": "GroundingDINO",
+      "provider": "IDEA / Hugging Face",
+      "category": "vision",
+      "use": "用文字找任意物体，不用重训类别。",
+      "demo": "Transformers",
+      "url": "https://huggingface.co/docs/transformers/main/en/model_doc/grounding-dino",
+      "command": "pip install transformers torch pillow\n# prompt: \"yellow flower. diseased leaf.\""
+    },
+    {
+      "task": "分割",
+      "name": "SAM 3 / SAM 2",
+      "provider": "Meta",
+      "category": "segment",
+      "use": "点选、框选、文字提示分割，视频目标跟踪。",
+      "demo": "Playground / GitHub",
+      "url": "https://segment-anything.com/",
+      "command": "GroundingDINO -> box\nSAM -> mask\npostprocess -> area / count / boundary"
+    },
+    {
+      "task": "开放世界计数",
+      "name": "CountGD / CountGD++",
+      "provider": "Oxford VGG",
+      "category": "count",
+      "use": "按文字或示例图计数：花、细胞、人群、果实。",
+      "demo": "GitHub / Project",
+      "url": "https://www.robots.ox.ac.uk/~vgg/research/countgd/",
+      "command": "git clone https://github.com/niki-amini-naieni/CountGD.git\n# image + text prompt -> count + boxes/points"
+    },
+    {
+      "task": "固定场景计数",
+      "name": "P2PNet、PET、LOCA",
+      "provider": "Research",
+      "category": "count",
+      "use": "有标注数据时训练专用计数模型。",
+      "demo": "GitHub / Train",
+      "url": "https://github.com/TencentYoutuResearch/CrowdCounting-P2PNet",
+      "command": "python train.py --data_path your_dataset\npython test.py --resume best.pth"
+    },
+    {
+      "task": "OCR / 文档解析",
+      "name": "PaddleOCR-VL",
+      "provider": "PaddlePaddle",
+      "category": "document",
+      "use": "扫描件、表格、公式、图表、PDF 转 Markdown/JSON。",
+      "demo": "Docs / Hugging Face",
+      "url": "https://www.paddleocr.ai/main/en/index.html",
+      "command": "pip install -U \"paddleocr[doc-parser]\"\n# input: PDF/image -> Markdown/JSON"
+    },
+    {
+      "task": "多任务视觉",
+      "name": "Florence-2",
+      "provider": "Microsoft",
+      "category": "vision",
+      "use": "图像描述、OCR、检测、区域描述。",
+      "demo": "Hugging Face",
+      "url": "https://huggingface.co/microsoft/Florence-2-large",
+      "command": "pip install transformers torch pillow\n# prompts: <CAPTION>, <OD>, <OCR>"
+    },
+    {
+      "task": "深度估计",
+      "name": "Depth Anything V2",
+      "provider": "Depth Anything",
+      "category": "3d",
+      "use": "单图深度、空间理解、AR/机器人前处理。",
+      "demo": "Transformers",
+      "url": "https://huggingface.co/docs/transformers/en/model_doc/depth_anything_v2",
+      "command": "pipeline(\"depth-estimation\", model=\"depth-anything/Depth-Anything-V2-Base-hf\")"
+    },
+    {
+      "task": "3D 生成",
+      "name": "TRELLIS / SAM 3D",
+      "provider": "Microsoft / Meta",
+      "category": "3d",
+      "use": "图生 3D、文本生 3D、单图物体或人体重建。",
+      "demo": "Project / GitHub",
+      "url": "https://microsoft.github.io/TRELLIS/",
+      "command": "git clone https://github.com/microsoft/TRELLIS.git\n# text/image -> 3D asset"
+    },
+    {
+      "task": "6D 姿态",
+      "name": "FoundationPose",
+      "provider": "NVIDIA",
+      "category": "3d",
+      "use": "机器人抓取、工业定位、AR 对齐。",
+      "demo": "GitHub",
+      "url": "https://github.com/NVlabs/FoundationPose",
+      "command": "git clone https://github.com/NVlabs/FoundationPose.git\n# RGB-D + CAD/reference -> 6D pose"
+    },
+    {
+      "task": "语音转写",
+      "name": "Whisper、Scribe、gpt-4o-transcribe",
+      "provider": "OpenAI / ElevenLabs",
+      "category": "audio",
+      "use": "录音转文字、字幕、会议纪要、客服质检。",
+      "demo": "API / 本地",
+      "url": "https://platform.openai.com/docs/guides/speech-to-text",
+      "command": "curl https://api.openai.com/v1/audio/transcriptions \\\n  -H \"Authorization: Bearer $OPENAI_API_KEY\" \\\n  -F file=\"@audio.mp3\" \\\n  -F model=\"gpt-4o-transcribe\""
+    },
+    {
+      "task": "语音合成",
+      "name": "ElevenLabs、XTTS-v2",
+      "provider": "ElevenLabs / Coqui",
+      "category": "audio",
+      "use": "TTS、配音、声音克隆、语音 Agent。",
+      "demo": "API / Local",
+      "url": "https://elevenlabs.io/docs/models",
+      "command": "pip install TTS\ntts --model_name tts_models/multilingual/multi-dataset/xtts_v2 \\\n  --text \"你好\" --speaker_wav speaker.wav --language_idx zh-cn"
+    },
+    {
+      "task": "遥感",
+      "name": "Prithvi、Satlas、GeoSAM",
+      "provider": "NASA-IBM / Allen AI",
+      "category": "vision",
+      "use": "卫星影像分类、地物分割、变化检测。",
+      "demo": "Hugging Face / GitHub",
+      "url": "https://huggingface.co/ibm-nasa-geospatial",
+      "command": "Prithvi/Satlas -> features/classification\nSAM adapter -> boundary\nGIS -> area/topology"
+    }
+  ],
+  "sources": [
+    { "label": "SAM", "url": "https://segment-anything.com/" },
+    { "label": "FLUX", "url": "https://docs.bfl.ai/" },
+    { "label": "Stable Diffusion", "url": "https://stability.ai/" },
+    { "label": "YOLO", "url": "https://docs.ultralytics.com/" },
+    { "label": "GroundingDINO", "url": "https://huggingface.co/docs/transformers/main/en/model_doc/grounding-dino" },
+    { "label": "CountGD", "url": "https://www.robots.ox.ac.uk/~vgg/research/countgd/" },
+    { "label": "PaddleOCR", "url": "https://www.paddleocr.ai/main/en/index.html" },
+    { "label": "Florence-2", "url": "https://huggingface.co/microsoft/Florence-2-large" },
+    { "label": "Depth Anything", "url": "https://huggingface.co/docs/transformers/en/model_doc/depth_anything_v2" },
+    { "label": "TRELLIS", "url": "https://microsoft.github.io/TRELLIS/" },
+    { "label": "FoundationPose", "url": "https://github.com/NVlabs/FoundationPose" },
+    { "label": "ElevenLabs", "url": "https://elevenlabs.io/docs/models" }
+  ]
+}

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 计数模型 | CountGD、P2PNet、PET 接入路线</title>
+    <meta name="description" content="整理开放世界计数和固定场景计数模型，包括 CountGD、P2PNet、PET 的适用场景、Demo 链接和接入路线。" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="kicker">Counting Models</p>
+        <h1>AI 计数模型</h1>
+        <p class="subtitle">花朵、果实、细胞、人群、商品库存：先分清开放世界计数和固定场景训练。</p>
+      </div>
+      <nav>
+        <a href="index.html">首页</a>
+        <a href="#route">路线</a>
+        <a href="#template">模板</a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <section class="business">
+        <div>
+          <p class="kicker">Quick choice</p>
+          <h2>怎么选</h2>
+        </div>
+        <div class="business-grid">
+          <article>
+            <h3>没有标注数据</h3>
+            <p>优先试 CountGD / CountGD++：输入图片和文字提示，输出数量和位置。</p>
+          </article>
+          <article>
+            <h3>有点标注数据</h3>
+            <p>训练 P2PNet / PET / LOCA 这类专用计数模型，稳定性通常更好。</p>
+          </article>
+          <article>
+            <h3>需要可解释结果</h3>
+            <p>不要只返回数字，最好展示 boxes / points / heatmap，方便人工审查。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="table-card" id="route">
+        <table>
+          <thead>
+            <tr>
+              <th>路线</th>
+              <th>模型</th>
+              <th>适合</th>
+              <th>指标</th>
+              <th>入口</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>开放世界计数</td>
+              <td><span class="model">CountGD / CountGD++</span><span class="provider">Oxford VGG</span></td>
+              <td>类别经常变化、标注少、需要文字提示。</td>
+              <td>MAE、RMSE、Bias、定位误差。</td>
+              <td><a class="demo" href="https://www.robots.ox.ac.uk/~vgg/research/countgd/" target="_blank" rel="noreferrer">Project</a></td>
+            </tr>
+            <tr>
+              <td>固定场景计数</td>
+              <td><span class="model">P2PNet / PET / LOCA</span><span class="provider">Research baselines</span></td>
+              <td>同一类目标长期重复计数，例如花朵、细胞、人群。</td>
+              <td>MAE、RMSE、Bias、跨地块泛化。</td>
+              <td><a class="demo" href="https://github.com/TencentYoutuResearch/CrowdCounting-P2PNet" target="_blank" rel="noreferrer">GitHub</a></td>
+            </tr>
+            <tr>
+              <td>检测后计数</td>
+              <td><span class="model">YOLO / GroundingDINO</span><span class="provider">Detection pipeline</span></td>
+              <td>目标清晰、遮挡少、需要 boxes 而不是点。</td>
+              <td>Precision、Recall、F1、count error。</td>
+              <td><a class="demo" href="https://docs.ultralytics.com/" target="_blank" rel="noreferrer">Docs</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="business" id="template">
+        <div>
+          <p class="kicker">Paid template</p>
+          <h2>可销售模板</h2>
+        </div>
+        <div class="command-card">
+          <pre>计数模板应包含：
+1. 上传图片
+2. 选择模型路线
+3. 输入目标提示词
+4. 输出 count + points/boxes
+5. 导出 CSV / JSON
+6. 保存失败案例用于复测</pre>
+        </div>
+        <div class="cta">
+          <a class="primary" href="mailto:hello@example.com?subject=购买计数模型接入模板">购买计数模板</a>
+          <a class="secondary" href="index.html">返回模型表</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 图像分割模型 | SAM、GroundingDINO 接入路线</title>
+    <meta name="description" content="整理 SAM 3、SAM 2、GroundingDINO 的图像分割和视频跟踪分割接入路线，适合标注、抠图、面积计算和检测后处理。" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="kicker">Segmentation Models</p>
+        <h1>AI 分割模型</h1>
+        <p class="subtitle">标注、抠图、面积统计、视频跟踪：常用组合是 GroundingDINO 找目标，SAM 生成 mask。</p>
+      </div>
+      <nav>
+        <a href="index.html">首页</a>
+        <a href="#route">路线</a>
+        <a href="#template">模板</a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <section class="business">
+        <div>
+          <p class="kicker">Quick choice</p>
+          <h2>怎么选</h2>
+        </div>
+        <div class="business-grid">
+          <article>
+            <h3>交互式标注</h3>
+            <p>用 SAM 点选 / 框选生成 mask，适合人工快速修边。</p>
+          </article>
+          <article>
+            <h3>文字找目标</h3>
+            <p>用 GroundingDINO 根据文本生成 box，再交给 SAM 分割。</p>
+          </article>
+          <article>
+            <h3>视频目标跟踪</h3>
+            <p>用 SAM 系列视频能力，重点评估遮挡、出画和目标漂移。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="table-card" id="route">
+        <table>
+          <thead>
+            <tr>
+              <th>任务</th>
+              <th>模型</th>
+              <th>输出</th>
+              <th>注意点</th>
+              <th>入口</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>通用分割</td>
+              <td><span class="model">SAM 3 / SAM 2</span><span class="provider">Meta</span></td>
+              <td>mask、边界、多目标分割。</td>
+              <td>细边界、透明物体、重叠物体要复核。</td>
+              <td><a class="demo" href="https://segment-anything.com/" target="_blank" rel="noreferrer">Demo</a></td>
+            </tr>
+            <tr>
+              <td>开放词汇定位</td>
+              <td><span class="model">GroundingDINO</span><span class="provider">IDEA / Hugging Face</span></td>
+              <td>文本提示对应的 boxes。</td>
+              <td>提示词要具体，多个类别要分开测试。</td>
+              <td><a class="demo" href="https://huggingface.co/docs/transformers/main/en/model_doc/grounding-dino" target="_blank" rel="noreferrer">Docs</a></td>
+            </tr>
+            <tr>
+              <td>面积 / 数量统计</td>
+              <td><span class="model">GroundingDINO + SAM</span><span class="provider">Pipeline</span></td>
+              <td>mask area、object count、CSV。</td>
+              <td>必须做后处理：连通域、面积阈值、重复 mask 去重。</td>
+              <td><a class="demo" href="index.html">模型表</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="business" id="template">
+        <div>
+          <p class="kicker">Paid template</p>
+          <h2>可销售模板</h2>
+        </div>
+        <pre>分割模板应包含：
+1. 上传图片
+2. 输入文字提示或点击目标
+3. 输出 mask overlay
+4. 计算面积 / 边界 / 数量
+5. 导出 PNG mask + COCO JSON
+6. 人工修正入口</pre>
+        <div class="cta">
+          <a class="primary" href="mailto:hello@example.com?subject=购买分割模型接入模板">购买分割模板</a>
+          <a class="secondary" href="index.html">返回模型表</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
